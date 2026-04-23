@@ -12,11 +12,21 @@ body {
     color: #450A0A;
 }
 
+/* TOPBAR ADJUSTMENTS */
 .topbar {
     background: linear-gradient(90deg, #E11D48, #be123c);
     color: white;
-    padding: 16px;
+    padding: 10px 20px; /* Reduced padding for a sleeker look */
     font-weight: 600;
+    display: flex;
+    align-items: center; /* Centers logo and text vertically */
+    gap: 15px; /* Space between logo and text */
+}
+
+.logo {
+    height: 40px; /* Adjust height as needed */
+    width: auto;
+    border-radius: 4px;
 }
 
 .container {
@@ -79,18 +89,6 @@ body {
     display: none;
     color: #FFF5F5;
 }
-
-.badge {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    margin-top: 5px;
-}
-
-.badge.red { background:#E11D48; color:white; }
-.badge.blue { background:#6366F1; color:white; }
-.badge.gold { background:#F59E0B; color:white; }
 
 /* MAIN */
 .main {
@@ -193,7 +191,6 @@ button {
     text-align: center;
 }
 
-/* ACTION */
 .modal-box button {
     width: 100%;
     margin: 6px 0;
@@ -209,32 +206,28 @@ button {
 
 <body>
 
-<div class="topbar">VA Classroom Dashboard</div>
+<div class="topbar">
+    <img src="kling_20260422_VIDEO__1217_0.png" alt="Logo" class="logo">
+    <span>VA Classroom Dashboard</span>
+</div>
 
 <div class="container">
 
 <div class="sidebar">
     <h3>Trainer View</h3>
-
     <button onclick="switchTrainer('Au')">Au</button>
     <button onclick="switchTrainer('Chanie')">Chanie</button>
     <button onclick="switchTrainer('Leo')">Leo</button>
-
     <hr>
-
     <div id="occupancy">0/10 seats</div>
-
     <h4>Search VA</h4>
     <input id="searchBox" onkeydown="handleSearch(event)">
-
     <div class="trainer-photo">
         <img id="trainerImg" src="au.png">
         <p id="trainerName">Au</p>
     </div>
-
     <div id="trainerPanel">
         <h4>Trainer Profile</h4>
-        <div id="trainerBadge"></div>
         <div id="trainerCount"></div>
         <div style="background:#7f1d1d;height:10px;border-radius:10px;margin-top:6px;">
             <div id="bar" style="height:10px;width:0;background:#E11D48;border-radius:10px;"></div>
@@ -243,26 +236,21 @@ button {
 </div>
 
 <div class="main">
-
 <div class="card">
     <h3>Assign VA</h3>
     <input id="vaName" placeholder="VA Name">
     <input id="agency" placeholder="Agency">
-
     <select id="trainerSelect">
         <option>Au</option>
         <option>Chanie</option>
         <option>Leo</option>
     </select>
-
     <button onclick="assignVA()">Assign VA</button>
 </div>
-
 <div class="card">
     <h3 id="classTitle"></h3>
     <div class="grid" id="seatGrid"></div>
 </div>
-
 </div>
 </div>
 
@@ -294,7 +282,6 @@ button {
 <div id="toast" class="toast"></div>
 
 <script>
-
 let trainers = JSON.parse(localStorage.getItem("va_data")) || {
     Au: [],
     Chanie: [],
@@ -325,13 +312,11 @@ function toast(msg) {
 function updateTrainerUI() {
     document.getElementById("trainerImg").src = trainerImages[currentTrainer];
     document.getElementById("trainerName").innerText = currentTrainer;
-    document.getElementById("trainerImg").onclick = showTrainerPanel;
 }
 
 function showTrainerPanel() {
     let count = trainers[currentTrainer].length;
     let percent = (count / 10) * 100;
-
     document.getElementById("trainerPanel").style.display = "block";
     document.getElementById("trainerCount").innerText = `VA Count: ${count}/10`;
     document.getElementById("bar").style.width = percent + "%";
@@ -347,9 +332,7 @@ function assignVA() {
     let name = document.getElementById("vaName").value;
     let agency = document.getElementById("agency").value;
     let trainer = document.getElementById("trainerSelect").value;
-
     if(!name || !agency) return toast("Fill all fields");
-
     trainers[trainer].push({ name, agency });
     save();
     render();
@@ -382,7 +365,6 @@ function render() {
     let list = trainers[currentTrainer];
     document.getElementById("classTitle").innerText = currentTrainer;
     let filled = 0;
-
     for (let i = 0; i < 10; i++) {
         let seat = document.createElement("div");
         seat.className = "seat";
@@ -399,25 +381,19 @@ function render() {
     document.getElementById("occupancy").innerText = filled + "/10 seats";
 }
 
-/* ACTIONS */
 function openAction(i){ 
     selectedIndex=i; 
     document.getElementById("actionModal").classList.add("active"); 
     document.getElementById("actionTitle").innerText=trainers[currentTrainer][i].name; 
 }
 
-function closeAction(){ 
-    document.getElementById("actionModal").classList.remove("active"); 
-}
+function closeAction(){ document.getElementById("actionModal").classList.remove("active"); }
 
 function deleteVA(){ 
     trainers[currentTrainer].splice(selectedIndex,1); 
-    save(); render(); 
-    closeAction(); 
-    toast("Deleted"); 
+    save(); render(); closeAction(); toast("Deleted"); 
 }
 
-// Logic to show only ONE relevant box
 function openEditName(){ 
     mode="name"; 
     document.getElementById("editHeader").innerText = "Edit Name";
@@ -450,7 +426,6 @@ function openMove(){
 function confirmModal(){
     let va = trainers[currentTrainer][selectedIndex];
     let val = document.getElementById("modalSingleInput").value;
-
     if(mode==="name") va.name = val;
     if(mode==="agency") va.agency = val;
     if(mode==="move"){
@@ -458,20 +433,13 @@ function confirmModal(){
         trainers[t].push(va);
         trainers[currentTrainer].splice(selectedIndex,1);
     }
-
-    save();
-    render();
-    closeEdit();
-    toast("Updated");
+    save(); render(); closeEdit(); toast("Updated");
 }
 
-function closeEdit(){ 
-    document.getElementById("editModal").classList.remove("active"); 
-}
+function closeEdit(){ document.getElementById("editModal").classList.remove("active"); }
 
 updateTrainerUI();
 render();
-
 </script>
 
 </body>
