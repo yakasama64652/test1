@@ -12,7 +12,6 @@
     --sidebar-bg: #0F172A;
     --text-dark: #1E293B;
     --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    /* Status Colors */
     --status-active: #22C55E;
     --status-break: #EAB308;
     --status-help: #EF4444;
@@ -25,6 +24,37 @@ body {
     color: var(--text-dark);
 }
 
+/* AUTH PAGES STYLE */
+#authContainer {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--sidebar-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20000;
+}
+
+.auth-card {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+    text-align: center;
+}
+
+.auth-card h2 { margin-bottom: 10px; color: var(--text-dark); }
+.auth-card p { color: #64748B; margin-bottom: 25px; }
+.auth-card input { width: 100%; box-sizing: border-box; margin-bottom: 15px; }
+.auth-card button { width: 100%; padding: 14px; margin-top: 10px; }
+.auth-footer { margin-top: 20px; font-size: 14px; color: #64748B; }
+.auth-footer span { color: var(--primary); cursor: pointer; font-weight: 600; }
+
+/* DASHBOARD STYLE (Hidden by default) */
+#mainApp { display: none; }
+
 .topbar {
     background: #FFFFFF;
     color: var(--text-dark);
@@ -36,11 +66,10 @@ body {
     border-bottom: 1px solid #E2E8F0;
 }
 
-.logo { height: 35px; width: auto; border-radius: 6px; }
+.logo { height: 35px; border-radius: 6px; }
 
 .container { display: flex; height: calc(100vh - 60px); }
 
-/* SIDEBAR */
 .sidebar {
     width: 280px;
     background: var(--sidebar-bg);
@@ -48,197 +77,121 @@ body {
     padding: 24px;
     display: flex;
     flex-direction: column;
-    box-shadow: 4px 0 10px rgba(0,0,0,0.05);
 }
 
-.sidebar h3, .sidebar h4 {
-    color: #94A3B8;
-    text-transform: uppercase;
-    font-size: 12px;
-    letter-spacing: 0.05em;
-    margin-bottom: 15px;
-}
+.sidebar h3, .sidebar h4 { color: #94A3B8; text-transform: uppercase; font-size: 12px; margin-bottom: 15px; }
 
 .sidebar button {
-    width: 100%;
-    margin: 4px 0;
-    padding: 12px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    color: #F1F5F9;
-    border-radius: 8px;
-    text-align: left;
-    cursor: pointer;
-    transition: 0.2s;
+    width: 100%; margin: 4px 0; padding: 12px;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    color: #F1F5F9; border-radius: 8px; text-align: left; cursor: pointer;
 }
 
-.sidebar button:hover { background: var(--primary); border-color: var(--primary); }
+.sidebar button:hover { background: var(--primary); }
 
-/* MAIN CONTENT */
 .main { flex-grow: 1; padding: 30px; overflow-y: auto; }
 
-.card {
-    background: #FFFFFF;
-    padding: 24px;
-    border-radius: 16px;
-    margin-bottom: 24px;
-    box-shadow: var(--card-shadow);
-}
+.card { background: white; padding: 24px; border-radius: 16px; margin-bottom: 24px; box-shadow: var(--card-shadow); }
 
 .controls-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 15px; }
 
-/* INPUTS */
-input, select {
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #CBD5E1;
-    background: #F8FAFC;
-}
+input, select { padding: 10px; border-radius: 8px; border: 1px solid #CBD5E1; background: #F8FAFC; }
 
-/* GRID & SEATS */
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-    gap: 20px;
-}
+button { background: var(--primary); border: none; color: white; padding: 10px 18px; font-weight: 600; cursor: pointer; border-radius: 8px; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 20px; }
 
 .seat {
-    background: #FFFFFF;
-    border-radius: 12px;
-    padding: 15px;
-    text-align: center;
-    cursor: pointer;
-    border: 2px solid #E2E8F0;
-    transition: 0.2s;
-    position: relative;
-    min-height: 100px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    background: white; border-radius: 12px; padding: 15px; text-align: center;
+    cursor: pointer; border: 2px solid #E2E8F0; position: relative; min-height: 100px;
+    display: flex; flex-direction: column; justify-content: center;
 }
 
-.seat.selected { border-color: var(--primary); background: #EEF2FF; }
-
-/* Status Dot */
-.status-dot {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    border: 2px solid white;
-}
-
+.status-dot { position: absolute; top: 10px; right: 10px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; }
 .status-active { background: var(--status-active); }
 .status-break { background: var(--status-break); }
 .status-help { background: var(--status-help); }
 
-/* BUTTONS */
-button {
-    background: var(--primary);
-    border: none;
-    color: white;
-    padding: 10px 18px;
-    font-weight: 600;
-    cursor: pointer;
-    border-radius: 8px;
-}
-
-.btn-secondary { background: #64748B; }
-.btn-outline { background: transparent; border: 1px solid #CBD5E1; color: var(--text-dark); }
-.btn-outline.active { background: var(--primary); color: white; border-color: var(--primary); }
-
-/* TOAST & MODAL */
-.toast {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    background: var(--sidebar-bg);
-    color: white;
-    padding: 16px 24px;
-    border-radius: 12px;
-    opacity: 0;
-    transition: 0.4s;
-    z-index: 9999;
-}
+.toast { position: fixed; bottom: 30px; right: 30px; background: var(--sidebar-bg); color: white; padding: 16px 24px; border-radius: 12px; opacity: 0; transition: 0.4s; z-index: 9999; }
 .toast.show { opacity: 1; }
 
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(15, 23, 42, 0.8);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-}
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); display: none; align-items: center; justify-content: center; z-index: 10000; }
 .modal.active { display: flex; }
 .modal-box { background: white; width: 360px; padding: 30px; border-radius: 20px; text-align: center; }
 .modal-box button { width: 100%; margin: 8px 0; }
-
-.delete { background: #EF4444 !important; }
 </style>
 </head>
 
 <body>
 
-<div class="topbar">
-    <img src="kling_20260422_VIDEO__1217_0.png" alt="Logo" class="logo">
-    <span>VA Classroom Dashboard Pro</span>
-</div>
-
-<div class="container">
-    <div class="sidebar">
-        <h3>Trainer View</h3>
-        <button onclick="switchTrainer('Au')">Au</button>
-        <button onclick="switchTrainer('Chanie')">Chanie</button>
-        <button onclick="switchTrainer('Leo')">Leo</button>
-        <hr style="border:0; border-top:1px solid #334155; margin:20px 0;">
-        <div id="occupancy" style="background:#1E293B; padding:10px; border-radius:8px; text-align:center; font-size:14px;">0/10 seats</div>
-        <h4 style="margin-top:20px;">Quick Search</h4>
-        <input id="searchBox" onkeydown="handleSearch(event)" placeholder="Search VA..." style="width:100%; background:#1E293B; border:none; color:white;">
-        
-        <div style="margin-top:auto; text-align:center;">
-            <img id="trainerImg" src="au.png" style="width:100px; height:100px; border-radius:50%; border:3px solid var(--primary); object-fit:cover;">
-            <p id="trainerName" style="font-weight:600; margin-top:10px;"></p>
+<div id="authContainer">
+    <div class="auth-card" id="loginCard">
+        <h2>Admin Login</h2>
+        <p>Enter your credentials to access the dashboard.</p>
+        <input type="text" id="loginUser" placeholder="Username">
+        <input type="password" id="loginPass" placeholder="Password">
+        <button onclick="handleLogin()">Sign In</button>
+        <div class="auth-footer">
+            Don't have an account? <span onclick="toggleAuth('signup')">Sign Up</span>
         </div>
     </div>
 
-    <div class="main">
-        <div class="card">
-            <h3>Assign VA</h3>
-            <div class="controls-row">
-                <input id="vaName" placeholder="VA Name">
-                <input id="agency" placeholder="Agency">
-                <select id="trainerSelect">
-                    <option>Au</option>
-                    <option>Chanie</option>
-                    <option>Leo</option>
-                </select>
-                <button onclick="assignVA()">Assign VA</button>
+    <div class="auth-card" id="signupCard" style="display:none;">
+        <h2>Create Admin</h2>
+        <p>Register a new administrator account.</p>
+        <input type="text" id="regUser" placeholder="Choose Username">
+        <input type="password" id="regPass" placeholder="Create Password">
+        <button onclick="handleSignup()">Create Account</button>
+        <div class="auth-footer">
+            Already have an account? <span onclick="toggleAuth('login')">Log In</span>
+        </div>
+    </div>
+</div>
+
+<div id="mainApp">
+    <div class="topbar">
+        <img src="kling_20260422_VIDEO__1217_0.png" alt="Logo" class="logo">
+        <span>VA Classroom Dashboard Pro</span>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>Trainer View</h3>
+            <button onclick="switchTrainer('Au')">Au</button>
+            <button onclick="switchTrainer('Chanie')">Chanie</button>
+            <button onclick="switchTrainer('Leo')">Leo</button>
+            <hr style="border:0; border-top:1px solid #334155; margin:20px 0;">
+            <div id="occupancy" style="background:#1E293B; padding:10px; border-radius:8px; text-align:center; font-size:14px;">0/10 seats</div>
+            
+            <div style="margin-top:auto; text-align:center;">
+                <img id="trainerImg" src="au.png" style="width:80px; height:80px; border-radius:50%; border:3px solid var(--primary); object-fit:cover;">
+                <p id="trainerName" style="font-weight:600; margin-top:10px;"></p>
+                <button onclick="handleLogout()" style="background:#EF4444; width:100%; margin-top:10px; text-align:center;">Logout</button>
             </div>
         </div>
 
-        <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h3 id="classTitle" style="margin:0;">Classroom</h3>
-                <div style="display:flex; gap:8px;">
-                    <button id="multiSelectBtn" class="btn-outline" onclick="toggleMultiSelect()">Select Multiple</button>
-                    <button class="btn-secondary" onclick="exportToCSV()">Export CSV</button>
+        <div class="main">
+            <div class="card">
+                <h3>Assign VA</h3>
+                <div class="controls-row">
+                    <input id="vaName" placeholder="VA Name">
+                    <input id="agency" placeholder="Agency">
+                    <select id="trainerSelect">
+                        <option>Au</option>
+                        <option>Chanie</option>
+                        <option>Leo</option>
+                    </select>
+                    <button onclick="assignVA()">Assign VA</button>
                 </div>
             </div>
 
-            <div id="bulkActions" class="controls-row" style="display:none; background:#F1F5F9; padding:15px; border-radius:10px; border:1px solid #CBD5E1;">
-                <span id="selectCount" style="font-weight:600; font-size:14px;">0 selected</span>
-                <button class="delete" onclick="bulkDelete()">Delete Selected</button>
-                <button onclick="bulkMove()">Move Selected</button>
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h3 id="classTitle" style="margin:0;">Classroom</h3>
+                    <button onclick="exportToCSV()" style="background:#64748B">Export CSV</button>
+                </div>
+                <div class="grid" id="seatGrid"></div>
             </div>
-
-            <div class="grid" id="seatGrid"></div>
         </div>
     </div>
 </div>
@@ -254,37 +207,64 @@ button {
         </div>
         <hr>
         <button onclick="openEditName()">Edit Name</button>
-        <button onclick="openEditAgency()">Edit Agency</button>
         <button onclick="openMove()" style="background:#8B5CF6">Move VA</button>
-        <button onclick="deleteVA()" class="delete">Remove</button>
-        <button onclick="closeAction()" class="btn-secondary">Close</button>
-    </div>
-</div>
-
-<div id="editModal" class="modal">
-    <div class="modal-box">
-        <h3 id="editHeader">Edit</h3>
-        <input id="modalSingleInput" style="width:100%; box-sizing:border-box;">
-        <select id="modalTrainer" style="display:none; width:100%;">
-            <option>Au</option>
-            <option>Chanie</option>
-            <option>Leo</option>
-        </select>
-        <button onclick="confirmModal()">Save Changes</button>
-        <button class="btn-secondary" onclick="closeEdit()">Cancel</button>
+        <button onclick="deleteVA()" style="background:#EF4444">Remove</button>
+        <button onclick="closeAction()" style="background:#64748B">Close</button>
     </div>
 </div>
 
 <div id="toast" class="toast"></div>
 
 <script>
+/* ================= AUTH LOGIC ================= */
+let admins = JSON.parse(localStorage.getItem("dashboard_admins")) || {};
+
+function toggleAuth(type) {
+    document.getElementById('loginCard').style.display = type === 'login' ? 'block' : 'none';
+    document.getElementById('signupCard').style.display = type === 'signup' ? 'block' : 'none';
+}
+
+function handleSignup() {
+    const user = document.getElementById('regUser').value;
+    const pass = document.getElementById('regPass').value;
+    if(!user || !pass) return alert("Please fill all fields");
+    if(admins[user]) return alert("Username already exists");
+
+    admins[user] = pass;
+    localStorage.setItem("dashboard_admins", JSON.stringify(admins));
+    alert("Account created! You can now log in.");
+    toggleAuth('login');
+}
+
+function handleLogin() {
+    const user = document.getElementById('loginUser').value;
+    const pass = document.getElementById('loginPass').value;
+    if(admins[user] && admins[user] === pass) {
+        sessionStorage.setItem("isLoggedIn", "true");
+        showApp();
+    } else {
+        alert("Invalid credentials!");
+    }
+}
+
+function handleLogout() {
+    sessionStorage.removeItem("isLoggedIn");
+    location.reload();
+}
+
+function showApp() {
+    document.getElementById('authContainer').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+    render();
+}
+
+// Auto-login check on load
+if(sessionStorage.getItem("isLoggedIn") === "true") showApp();
+
+/* ================= DASHBOARD LOGIC ================= */
 let trainers = JSON.parse(localStorage.getItem("va_data")) || { Au: [], Chanie: [], Leo: [] };
 let currentTrainer = "Au";
 let selectedIndex = null;
-let mode = "";
-let isMultiSelect = false;
-let selectedSeats = [];
-
 const trainerImages = { Au: "au.png", Chanie: "chanie.png", Leo: "leo.png" };
 
 function save() { localStorage.setItem("va_data", JSON.stringify(trainers)); }
@@ -295,22 +275,19 @@ function toast(msg) {
     setTimeout(() => t.classList.remove("show"), 2500);
 }
 
+function switchTrainer(t) {
+    currentTrainer = t;
+    updateTrainerUI();
+    render();
+}
+
 function updateTrainerUI() {
     document.getElementById("trainerImg").src = trainerImages[currentTrainer];
     document.getElementById("trainerName").innerText = currentTrainer;
 }
 
-function switchTrainer(t) {
-    currentTrainer = t;
-    isMultiSelect = false;
-    selectedSeats = [];
-    document.getElementById("multiSelectBtn").classList.remove("active");
-    document.getElementById("bulkActions").style.display = "none";
-    updateTrainerUI();
-    render();
-}
-
 function render() {
+    if(sessionStorage.getItem("isLoggedIn") !== "true") return;
     let grid = document.getElementById("seatGrid");
     grid.innerHTML = "";
     let list = trainers[currentTrainer];
@@ -321,14 +298,10 @@ function render() {
         let seat = document.createElement("div");
         seat.className = "seat";
         let va = list[i];
-
         if (va) {
-            if(!va.status) va.status = 'active'; // Default status
-            if(selectedSeats.includes(i)) seat.classList.add("selected");
-
-            seat.innerHTML = `<div class="status-dot status-${va.status}"></div>
+            seat.innerHTML = `<div class="status-dot status-${va.status || 'active'}"></div>
                              <b>${va.name}</b><br><span style="font-size:12px; color:#64748B;">${va.agency}</span>`;
-            seat.onclick = () => handleSeatClick(i);
+            seat.onclick = () => { selectedIndex = i; document.getElementById("actionModal").classList.add("active"); document.getElementById("actionTitle").innerText = va.name; };
             filled++;
         } else {
             seat.style.borderStyle = "dashed";
@@ -337,31 +310,7 @@ function render() {
         grid.appendChild(seat);
     }
     document.getElementById("occupancy").innerText = `${filled}/10 seats`;
-}
-
-function handleSeatClick(i) {
-    if (isMultiSelect) {
-        if (selectedSeats.includes(i)) {
-            selectedSeats = selectedSeats.filter(item => item !== i);
-        } else {
-            selectedSeats.push(i);
-        }
-        document.getElementById("selectCount").innerText = `${selectedSeats.length} selected`;
-        render();
-    } else {
-        selectedIndex = i;
-        document.getElementById("actionModal").classList.add("active");
-        document.getElementById("actionTitle").innerText = trainers[currentTrainer][i].name;
-    }
-}
-
-function toggleMultiSelect() {
-    isMultiSelect = !isMultiSelect;
-    selectedSeats = [];
-    document.getElementById("multiSelectBtn").classList.toggle("active");
-    document.getElementById("bulkActions").style.display = isMultiSelect ? "flex" : "none";
-    document.getElementById("selectCount").innerText = "0 selected";
-    render();
+    updateTrainerUI();
 }
 
 function setStatus(s) {
@@ -374,93 +323,23 @@ function assignVA() {
     let agency = document.getElementById("agency").value;
     let trainer = document.getElementById("trainerSelect").value;
     if(!name || !agency) return toast("Fill all fields");
-    if(trainers[trainer].length >= 10) return toast("Class full!");
-
     trainers[trainer].push({ name, agency, status: 'active' });
     save(); render(); toast("VA Added");
     document.getElementById("vaName").value = ""; document.getElementById("agency").value = "";
 }
 
-/* BULK ACTIONS */
-function bulkDelete() {
-    if(selectedSeats.length === 0) return;
-    if(confirm("Delete all selected VAs?")) {
-        trainers[currentTrainer] = trainers[currentTrainer].filter((_, i) => !selectedSeats.includes(i));
-        save(); toggleMultiSelect(); toast("Bulk Deleted");
-    }
-}
-
-function bulkMove() {
-    if(selectedSeats.length === 0) return;
-    mode = "bulkMove";
-    document.getElementById("editHeader").innerText = "Move VAs to:";
-    document.getElementById("modalSingleInput").style.display = "none";
-    document.getElementById("modalTrainer").style.display = "block";
-    document.getElementById("editModal").classList.add("active");
-}
-
-/* EXPORT */
 function exportToCSV() {
-    let list = trainers[currentTrainer];
-    if(list.length === 0) return toast("No data to export");
     let csv = "Name,Agency,Status\n";
-    list.forEach(v => { csv += `${v.name},${v.agency},${v.status}\n`; });
-    
+    trainers[currentTrainer].forEach(v => { csv += `${v.name},${v.agency},${v.status}\n`; });
     let blob = new Blob([csv], { type: 'text/csv' });
     let url = window.URL.createObjectURL(blob);
     let a = document.createElement('a');
-    a.href = url;
-    a.download = `${currentTrainer}_Roster.csv`;
-    a.click();
-}
-
-/* SEARCH & MODAL HELPERS (Original Logic Retained) */
-function handleSearch(e) { if (e.key === "Enter") searchVA(e.target.value); }
-function searchVA(q) {
-    q = q.toLowerCase();
-    for (let t in trainers) {
-        for (let i = 0; i < trainers[t].length; i++) {
-            if (trainers[t][i].name.toLowerCase().includes(q)) {
-                currentTrainer = t; updateTrainerUI(); render(); return;
-            }
-        }
-    }
+    a.href = url; a.download = `${currentTrainer}_Roster.csv`; a.click();
 }
 
 function closeAction(){ document.getElementById("actionModal").classList.remove("active"); }
 function deleteVA(){ trainers[currentTrainer].splice(selectedIndex,1); save(); render(); closeAction(); toast("Deleted"); }
-function openEditName(){ mode="name"; document.getElementById("editModal").classList.add("active"); closeAction(); }
-function openEditAgency(){ mode="agency"; document.getElementById("editModal").classList.add("active"); closeAction(); }
-function openMove(){ mode="move"; document.getElementById("editModal").classList.add("active"); closeAction(); }
 
-function confirmModal(){
-    let va = trainers[currentTrainer][selectedIndex];
-    if(mode === "name") va.name = document.getElementById("modalSingleInput").value;
-    if(mode === "agency") va.agency = document.getElementById("modalSingleInput").value;
-    if(mode === "move") {
-        let t = document.getElementById("modalTrainer").value;
-        trainers[t].push(va);
-        trainers[currentTrainer].splice(selectedIndex, 1);
-    }
-    if(mode === "bulkMove") {
-        let t = document.getElementById("modalTrainer").value;
-        let toMove = trainers[currentTrainer].filter((_, i) => selectedSeats.includes(i));
-        trainers[t] = [...trainers[t], ...toMove];
-        trainers[currentTrainer] = trainers[currentTrainer].filter((_, i) => !selectedSeats.includes(i));
-        toggleMultiSelect();
-    }
-    save(); render(); closeEdit(); toast("Updated");
-}
-
-function closeEdit(){ 
-    document.getElementById("editModal").classList.remove("active"); 
-    document.getElementById("modalTrainer").style.display = "none";
-    document.getElementById("modalSingleInput").style.display = "block";
-}
-
-updateTrainerUI();
-render();
 </script>
-
 </body>
 </html>
