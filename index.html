@@ -30,8 +30,6 @@ body {
     background: #2D0A0A;
     color: #FFF5F5;
     padding: 20px;
-    display: flex;
-    flex-direction: column;
 }
 
 .sidebar button {
@@ -43,10 +41,6 @@ body {
     color: #FFF5F5;
     border-radius: 10px;
     cursor: pointer;
-}
-
-.sidebar button:hover {
-    background: #E11D48;
 }
 
 /* MAIN */
@@ -112,14 +106,12 @@ body {
     padding: 10px;
 }
 
-/* BUTTON COLORS */
 .edit { background:#E11D48 !important; color:white; }
 .move { background:#7c3aed !important; color:white; }
 .delete { background:#dc2626 !important; color:white; }
 .closeBtn { background:#450A0A !important; color:white; }
 
 .hidden { display:none; }
-
 </style>
 </head>
 
@@ -129,6 +121,7 @@ body {
 
 <div class="container">
 
+<!-- SIDEBAR -->
 <div class="sidebar">
     <h3>Trainer View</h3>
     <button onclick="switchTrainer('Au')">Au</button>
@@ -136,6 +129,7 @@ body {
     <button onclick="switchTrainer('Leo')">Leo</button>
 </div>
 
+<!-- MAIN -->
 <div class="main">
 
 <div class="card">
@@ -163,12 +157,12 @@ body {
 <div id="editModal" class="modal">
     <div class="modal-box">
 
-        <h3 id="modalTitle">Edit</h3>
+        <h3 id="modalTitle"></h3>
 
-        <!-- SINGLE INPUT (USED FOR NAME OR AGENCY ONLY) -->
+        <!-- SINGLE INPUT ONLY -->
         <input id="modalInput" placeholder="Enter value">
 
-        <!-- MOVE DROPDOWN -->
+        <!-- MOVE DROPDOWN ONLY -->
         <select id="modalSelect" class="hidden">
             <option value="Au">Au</option>
             <option value="Chanie">Chanie</option>
@@ -177,7 +171,6 @@ body {
 
         <button onclick="confirmModal()">Save</button>
         <button class="closeBtn" onclick="closeEdit()">Cancel</button>
-
     </div>
 </div>
 
@@ -185,7 +178,9 @@ body {
 
 /* ================= DATA ================= */
 let trainers = JSON.parse(localStorage.getItem("va_data")) || {
-    Au: [], Chanie: [], Leo: []
+    Au: [],
+    Chanie: [],
+    Leo: []
 };
 
 let currentTrainer = "Au";
@@ -202,8 +197,9 @@ function render(){
     let grid = document.getElementById("seatGrid");
     grid.innerHTML = "";
 
-    let list = trainers[currentTrainer];
     document.getElementById("classTitle").innerText = currentTrainer;
+
+    let list = trainers[currentTrainer];
 
     for(let i=0;i<10;i++){
         let seat = document.createElement("div");
@@ -222,7 +218,7 @@ function render(){
     }
 }
 
-/* ================= ACTION MODAL ================= */
+/* ================= ACTION ================= */
 function openAction(i){
     selectedIndex = i;
     document.getElementById("actionModal").classList.add("active");
@@ -234,17 +230,14 @@ function closeAction(){
     document.getElementById("actionModal").classList.remove("active");
 }
 
-/* ================= EDIT / MOVE ================= */
+/* ================= EDIT (ONLY ONE INPUT) ================= */
 function openEdit(type){
     mode = type;
 
-    let input = document.getElementById("modalInput");
-    let select = document.getElementById("modalSelect");
+    document.getElementById("modalInput").classList.remove("hidden");
+    document.getElementById("modalSelect").classList.add("hidden");
 
-    input.classList.remove("hidden");
-    select.classList.add("hidden");
-
-    input.value = "";
+    document.getElementById("modalInput").value = "";
 
     document.getElementById("modalTitle").innerText =
         type === "name" ? "Edit Name" : "Edit Agency";
@@ -253,14 +246,12 @@ function openEdit(type){
     document.getElementById("editModal").classList.add("active");
 }
 
+/* ================= MOVE (DROPDOWN ONLY) ================= */
 function openMove(){
     mode = "move";
 
-    let input = document.getElementById("modalInput");
-    let select = document.getElementById("modalSelect");
-
-    input.classList.add("hidden");
-    select.classList.remove("hidden");
+    document.getElementById("modalInput").classList.add("hidden");
+    document.getElementById("modalSelect").classList.remove("hidden");
 
     document.getElementById("modalTitle").innerText = "Move VA";
 
@@ -289,7 +280,7 @@ function confirmModal(){
     render();
 }
 
-/* ================= CLOSE ================= */
+/* ================= CLOSE MODAL ================= */
 function closeEdit(){
     document.getElementById("editModal").classList.remove("active");
 }
