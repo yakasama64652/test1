@@ -12,7 +12,7 @@ body {
 }
 
 .topbar {
-    background: #1abc9c;
+    background: #e63946;
     color: white;
     padding: 15px;
 }
@@ -59,7 +59,7 @@ input, select, button {
 }
 
 button {
-    background: #1abc9c;
+    background: #e63946;
     border: none;
     color: white;
     cursor: pointer;
@@ -82,7 +82,7 @@ button {
 }
 
 .seat.highlight {
-    border: 3px solid #1abc9c;
+    border: 3px solid #e63946;
     transform: scale(1.05);
 }
 
@@ -94,7 +94,7 @@ button {
     background: white;
     color: #2c3e50;
     padding: 14px;
-    border-left: 5px solid #1abc9c;
+    border-left: 5px solid #e63946;
     border-radius: 10px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.15);
     opacity: 0;
@@ -159,7 +159,7 @@ button {
 }
 
 #modalCancel { background: #ccc; }
-#modalOk { background: #1abc9c; color: white; }
+#modalOk { background: #e63946; color: white; }
 
 /* ACTION */
 .action-box {
@@ -173,7 +173,7 @@ button {
 }
 
 .secondary { background: #3498db !important; }
-.danger { background: #e74c3c !important; }
+.danger { background: #e63946 !important; }
 .closeBtn { background: #ccc !important; }
 </style>
 </head>
@@ -334,7 +334,7 @@ function assignVA() {
     showToast("VA added");
 }
 
-/* SEARCH (FIXED BUT SAFE) */
+/* SEARCH */
 function handleSearchKey(e) {
     if (e.key === "Enter") searchVA(document.getElementById("searchBox").value);
 }
