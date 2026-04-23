@@ -46,11 +46,8 @@ body {
 }
 
 .auth-card h2 { margin-bottom: 10px; color: var(--text-dark); }
-.auth-card p { color: #64748B; margin-bottom: 25px; }
-.auth-card input { width: 100%; box-sizing: border-box; margin-bottom: 15px; }
-.auth-card button { width: 100%; padding: 14px; margin-top: 10px; }
-.auth-footer { margin-top: 20px; font-size: 14px; color: #64748B; }
-.auth-footer span { color: var(--primary); cursor: pointer; font-weight: 600; }
+.auth-card input, .auth-card select { width: 100%; box-sizing: border-box; margin-bottom: 15px; padding: 12px; border-radius: 8px; border: 1px solid #CBD5E1; }
+.auth-card button { width: 100%; padding: 14px; margin-top: 10px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
 
 /* DASHBOARD STYLE (Hidden by default) */
 #mainApp { display: none; }
@@ -79,7 +76,7 @@ body {
     flex-direction: column;
 }
 
-.sidebar h3, .sidebar h4 { color: #94A3B8; text-transform: uppercase; font-size: 12px; margin-bottom: 15px; }
+.sidebar h3 { color: #94A3B8; text-transform: uppercase; font-size: 12px; margin-bottom: 15px; }
 
 .sidebar button {
     width: 100%; margin: 4px 0; padding: 12px;
@@ -91,13 +88,10 @@ body {
 
 .main { flex-grow: 1; padding: 30px; overflow-y: auto; }
 
+/* Role Specific Visibility */
+.admin-only { display: none; }
+
 .card { background: white; padding: 24px; border-radius: 16px; margin-bottom: 24px; box-shadow: var(--card-shadow); }
-
-.controls-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 15px; }
-
-input, select { padding: 10px; border-radius: 8px; border: 1px solid #CBD5E1; background: #F8FAFC; }
-
-button { background: var(--primary); border: none; color: white; padding: 10px 18px; font-weight: 600; cursor: pointer; border-radius: 8px; }
 
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 20px; }
 
@@ -126,24 +120,27 @@ button { background: var(--primary); border: none; color: white; padding: 10px 1
 
 <div id="authContainer">
     <div class="auth-card" id="loginCard">
-        <h2>Admin Login</h2>
-        <p>Enter your credentials to access the dashboard.</p>
+        <h2>System Login</h2>
+        <p>Access the VA Classroom Dashboard.</p>
         <input type="text" id="loginUser" placeholder="Username">
         <input type="password" id="loginPass" placeholder="Password">
         <button onclick="handleLogin()">Sign In</button>
-        <div class="auth-footer">
-            Don't have an account? <span onclick="toggleAuth('signup')">Sign Up</span>
+        <div style="margin-top: 15px; font-size: 14px; color: #64748B;">
+            Don't have an account? <span style="color:var(--primary); cursor:pointer;" onclick="toggleAuth('signup')">Sign Up</span>
         </div>
     </div>
 
     <div class="auth-card" id="signupCard" style="display:none;">
-        <h2>Create Admin</h2>
-        <p>Register a new administrator account.</p>
-        <input type="text" id="regUser" placeholder="Choose Username">
-        <input type="password" id="regPass" placeholder="Create Password">
-        <button onclick="handleSignup()">Create Account</button>
-        <div class="auth-footer">
-            Already have an account? <span onclick="toggleAuth('login')">Log In</span>
+        <h2>Create Account</h2>
+        <input type="text" id="regUser" placeholder="Username">
+        <input type="password" id="regPass" placeholder="Password">
+        <select id="regRole">
+            <option value="va">Role: Virtual Assistant (View Only)</option>
+            <option value="admin">Role: Admin/Trainer (Full Access)</option>
+        </select>
+        <button onclick="handleSignup()">Register</button>
+        <div style="margin-top: 15px; font-size: 14px; color: #64748B;">
+            Already have an account? <span style="color:var(--primary); cursor:pointer;" onclick="toggleAuth('login')">Log In</span>
         </div>
     </div>
 </div>
@@ -151,7 +148,7 @@ button { background: var(--primary); border: none; color: white; padding: 10px 1
 <div id="mainApp">
     <div class="topbar">
         <img src="kling_20260422_VIDEO__1217_0.png" alt="Logo" class="logo">
-        <span>VA Classroom Dashboard Pro</span>
+        <span>VA Classroom Dashboard Pro <small id="userRoleBadge" style="background:#E2E8F0; padding:2px 8px; border-radius:4px; font-size:10px; margin-left:10px;"></small></span>
     </div>
 
     <div class="container">
@@ -166,17 +163,17 @@ button { background: var(--primary); border: none; color: white; padding: 10px 1
             <div style="margin-top:auto; text-align:center;">
                 <img id="trainerImg" src="au.png" style="width:80px; height:80px; border-radius:50%; border:3px solid var(--primary); object-fit:cover;">
                 <p id="trainerName" style="font-weight:600; margin-top:10px;"></p>
-                <button onclick="handleLogout()" style="background:#EF4444; width:100%; margin-top:10px; text-align:center;">Logout</button>
+                <button onclick="handleLogout()" style="background:#EF4444; width:100%; margin-top:10px;">Logout</button>
             </div>
         </div>
 
         <div class="main">
-            <div class="card">
-                <h3>Assign VA</h3>
-                <div class="controls-row">
-                    <input id="vaName" placeholder="VA Name">
-                    <input id="agency" placeholder="Agency">
-                    <select id="trainerSelect">
+            <div class="card admin-only" id="assignCard">
+                <h3>Assign New VA</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <input id="vaName" placeholder="VA Name" style="padding:10px; border-radius:8px; border:1px solid #CBD5E1;">
+                    <input id="agency" placeholder="Agency" style="padding:10px; border-radius:8px; border:1px solid #CBD5E1;">
+                    <select id="trainerSelect" style="padding:10px; border-radius:8px; border:1px solid #CBD5E1;">
                         <option>Au</option>
                         <option>Chanie</option>
                         <option>Leo</option>
@@ -188,7 +185,7 @@ button { background: var(--primary); border: none; color: white; padding: 10px 1
             <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                     <h3 id="classTitle" style="margin:0;">Classroom</h3>
-                    <button onclick="exportToCSV()" style="background:#64748B">Export CSV</button>
+                    <button class="admin-only" id="exportBtn" onclick="exportToCSV()" style="background:#64748B">Export CSV</button>
                 </div>
                 <div class="grid" id="seatGrid"></div>
             </div>
@@ -199,16 +196,20 @@ button { background: var(--primary); border: none; color: white; padding: 10px 1
 <div id="actionModal" class="modal">
     <div class="modal-box">
         <h3 id="actionTitle"></h3>
-        <p>Set Status:</p>
-        <div class="controls-row" style="justify-content:center;">
-            <button class="status-active" style="width:30px; height:30px; border-radius:50%; padding:0;" onclick="setStatus('active')"></button>
-            <button class="status-break" style="width:30px; height:30px; border-radius:50%; padding:0;" onclick="setStatus('break')"></button>
-            <button class="status-help" style="width:30px; height:30px; border-radius:50%; padding:0;" onclick="setStatus('help')"></button>
+        <div id="adminControls" class="admin-only">
+            <p>Set Status:</p>
+            <div style="display:flex; gap:10px; justify-content:center; margin-bottom:20px;">
+                <button class="status-active" style="width:30px; height:30px; border-radius:50%;" onclick="setStatus('active')"></button>
+                <button class="status-break" style="width:30px; height:30px; border-radius:50%;" onclick="setStatus('break')"></button>
+                <button class="status-help" style="width:30px; height:30px; border-radius:50%;" onclick="setStatus('help')"></button>
+            </div>
+            <button onclick="openEditName()" style="background:var(--primary)">Edit Name</button>
+            <button onclick="openMove()" style="background:#8B5CF6">Move VA</button>
+            <button onclick="deleteVA()" style="background:#EF4444">Remove VA</button>
         </div>
-        <hr>
-        <button onclick="openEditName()">Edit Name</button>
-        <button onclick="openMove()" style="background:#8B5CF6">Move VA</button>
-        <button onclick="deleteVA()" style="background:#EF4444">Remove</button>
+        <div id="vaView" style="display:none; color: #64748B; padding: 20px;">
+            Read-only mode. Trainers can update this profile.
+        </div>
         <button onclick="closeAction()" style="background:#64748B">Close</button>
     </div>
 </div>
@@ -216,8 +217,8 @@ button { background: var(--primary); border: none; color: white; padding: 10px 1
 <div id="toast" class="toast"></div>
 
 <script>
-/* ================= AUTH LOGIC ================= */
-let admins = JSON.parse(localStorage.getItem("dashboard_admins")) || {};
+/* ================= AUTH & ROLE LOGIC ================= */
+let accounts = JSON.parse(localStorage.getItem("db_accounts")) || {};
 
 function toggleAuth(type) {
     document.getElementById('loginCard').style.display = type === 'login' ? 'block' : 'none';
@@ -227,28 +228,49 @@ function toggleAuth(type) {
 function handleSignup() {
     const user = document.getElementById('regUser').value;
     const pass = document.getElementById('regPass').value;
+    const role = document.getElementById('regRole').value;
     if(!user || !pass) return alert("Please fill all fields");
-    if(admins[user]) return alert("Username already exists");
+    if(accounts[user]) return alert("Username taken");
 
-    admins[user] = pass;
-    localStorage.setItem("dashboard_admins", JSON.stringify(admins));
-    alert("Account created! You can now log in.");
+    accounts[user] = { pass, role };
+    localStorage.setItem("db_accounts", JSON.stringify(accounts));
+    alert("Account created!");
     toggleAuth('login');
 }
 
 function handleLogin() {
     const user = document.getElementById('loginUser').value;
     const pass = document.getElementById('loginPass').value;
-    if(admins[user] && admins[user] === pass) {
+    if(accounts[user] && accounts[user].pass === pass) {
         sessionStorage.setItem("isLoggedIn", "true");
+        sessionStorage.setItem("userRole", accounts[user].role);
+        applyPermissions();
         showApp();
     } else {
         alert("Invalid credentials!");
     }
 }
 
+function applyPermissions() {
+    const role = sessionStorage.getItem("userRole");
+    const adminElements = document.querySelectorAll('.admin-only');
+    const badge = document.getElementById('userRoleBadge');
+    
+    if(role === 'admin') {
+        adminElements.forEach(el => el.style.display = 'block');
+        badge.innerText = "ADMIN ACCESS";
+        document.getElementById('adminControls').style.display = 'block';
+        document.getElementById('vaView').style.display = 'none';
+    } else {
+        adminElements.forEach(el => el.style.display = 'none');
+        badge.innerText = "VA VIEW ONLY";
+        document.getElementById('adminControls').style.display = 'none';
+        document.getElementById('vaView').style.display = 'block';
+    }
+}
+
 function handleLogout() {
-    sessionStorage.removeItem("isLoggedIn");
+    sessionStorage.clear();
     location.reload();
 }
 
@@ -258,8 +280,10 @@ function showApp() {
     render();
 }
 
-// Auto-login check on load
-if(sessionStorage.getItem("isLoggedIn") === "true") showApp();
+if(sessionStorage.getItem("isLoggedIn") === "true") {
+    applyPermissions();
+    showApp();
+}
 
 /* ================= DASHBOARD LOGIC ================= */
 let trainers = JSON.parse(localStorage.getItem("va_data")) || { Au: [], Chanie: [], Leo: [] };
@@ -287,7 +311,6 @@ function updateTrainerUI() {
 }
 
 function render() {
-    if(sessionStorage.getItem("isLoggedIn") !== "true") return;
     let grid = document.getElementById("seatGrid");
     grid.innerHTML = "";
     let list = trainers[currentTrainer];
@@ -339,7 +362,6 @@ function exportToCSV() {
 
 function closeAction(){ document.getElementById("actionModal").classList.remove("active"); }
 function deleteVA(){ trainers[currentTrainer].splice(selectedIndex,1); save(); render(); closeAction(); toast("Deleted"); }
-
 </script>
 </body>
 </html>
