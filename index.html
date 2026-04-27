@@ -105,7 +105,7 @@ body {
 
 .seat {
     background: white; border-radius: 12px; padding: 15px; text-align: center;
-    cursor: pointer; border: 2px solid #E2E8F0; position: relative; min-height: 100px;
+    cursor: pointer; border: 2px solid #E2E8F0; position: relative; min-height: 120px;
     display: flex; flex-direction: column; justify-content: center; transition: 0.2s;
 }
 
@@ -196,9 +196,18 @@ body {
                 <div class="card admin-only">
                     <h3>Assign New VA</h3>
                     <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                        <input id="vaName" placeholder="VA Name" style="padding:10px; border-radius:8px; border:1px solid #CBD5E1;">
-                        <input id="agency" placeholder="Agency" style="padding:10px; border-radius:8px; border:1px solid #CBD5E1;">
-                        <select id="trainerSelect" style="padding:10px; border-radius:8px; border:1px solid #CBD5E1;">
+                        <input id="vaName" placeholder="VA Name" style="padding:10px; border-radius:8px; border:1px solid #CBD5E1; flex:1;">
+                        <input id="agency" placeholder="Agency" style="padding:10px; border-radius:8px; border:1px solid #CBD5E1; flex:1;">
+                        
+                        <select id="vaShift" style="padding:10px; border-radius:8px; border:1px solid #CBD5E1; flex:1;">
+                            <option value="08:00 AM - 05:00 PM">08:00 AM - 05:00 PM</option>
+                            <option value="09:00 AM - 06:00 PM">09:00 AM - 06:00 PM</option>
+                            <option value="10:00 AM - 07:00 PM">10:00 AM - 07:00 PM</option>
+                            <option value="10:00 PM - 07:00 AM">10:00 PM - 07:00 AM (Night)</option>
+                            <option value="Flexible">Flexible / Part-time</option>
+                        </select>
+
+                        <select id="trainerSelect" style="padding:10px; border-radius:8px; border:1px solid #CBD5E1; flex:1;">
                             <option>Au</option><option>Chanie</option><option>Leo</option>
                         </select>
                         <button onclick="assignVA()" style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;">Assign VA</button>
@@ -253,7 +262,7 @@ body {
                 <button class="status-break" style="width:40px; height:40px; border-radius:50%;" onclick="setStatus('break')"></button>
                 <button class="status-help" style="width:40px; height:40px; border-radius:50%;" onclick="setStatus('help')"></button>
             </div>
-            <button onclick="openEditName()" style="background:var(--primary)">Edit VA Details</button>
+            <button onclick="openEditName()" style="background:var(--primary)">Edit VA Details / Shift</button>
             <button onclick="openMove()" style="background:#8B5CF6">Move to Trainer</button>
             <button onclick="deleteVA()" style="background:#EF4444">Remove from Class</button>
         </div>
@@ -360,8 +369,13 @@ function render() {
         
         let va = list[i];
         if (va) {
-            seat.innerHTML = `<div class="status-dot status-${va.status || 'active'}"></div>
-                             <b>${va.name}</b><br><small style="color:#64748B">${va.agency}</small>`;
+            seat.innerHTML = `
+                <div class="status-dot status-${va.status || 'active'}"></div>
+                <b>${va.name}</b><br>
+                <small style="color:#64748B">${va.agency}</small>
+                <div style="font-size:10px; color:var(--primary); font-weight:700; margin-top:8px; padding-top:5px; border-top:1px solid #F1F5F9;">
+                    ${va.shift || 'Flexible'}
+                </div>`;
             seat.onclick = () => handleSeatClick(i);
             filled++;
         } else {
@@ -375,18 +389,22 @@ function render() {
 
 function handleSeatClick(index) {
     const role = sessionStorage.getItem("userRole");
+    selectedIndex = index;
     if (role === 'admin') {
         const pos = selectedIndices.indexOf(index);
-        if (pos > -1) selectedIndices.splice(pos, 1);
-        else selectedIndices.push(index);
-        updateSelectionUI();
+        if (pos > -1) {
+            selectedIndices.splice(pos, 1);
+            updateSelectionUI();
+        } else {
+            selectedIndices.push(index);
+            updateSelectionUI();
+        }
+        // Show modal for individual control
         if(selectedIndices.length === 1) {
-            selectedIndex = index;
             document.getElementById("actionModal").classList.add("active");
             document.getElementById("actionTitle").innerText = trainers[currentTrainer][index].name;
         }
     } else {
-        selectedIndex = index;
         document.getElementById("actionModal").classList.add("active");
         document.getElementById("actionTitle").innerText = trainers[currentTrainer][index].name;
     }
@@ -394,7 +412,7 @@ function handleSeatClick(index) {
 
 function updateSelectionUI() {
     const ui = document.getElementById("selectionUI");
-    ui.style.display = selectedIndices.length > 0 ? "flex" : "none";
+    ui.style.display = selectedIndices.length > 1 ? "flex" : "none";
     document.getElementById("selectedCount").innerText = `${selectedIndices.length} VA(s) selected`;
     render();
 }
@@ -449,34 +467,49 @@ function setStatus(s) {
 }
 
 function assignVA() {
-    let n = document.getElementById("vaName").value, a = document.getElementById("agency").value, t = document.getElementById("trainerSelect").value;
+    let n = document.getElementById("vaName").value, 
+        a = document.getElementById("agency").value, 
+        s = document.getElementById("vaShift").value,
+        t = document.getElementById("trainerSelect").value;
+    
     if(!n || !a) return toast("Fill all fields");
     if(trainers[t].length >= 10) return toast("Class Full");
-    trainers[t].push({name:n, agency:a, status:'active'});
+    
+    trainers[t].push({name:n, agency:a, status:'active', shift:s});
     save(); render(); toast("VA Assigned");
-    document.getElementById("vaName").value = ""; document.getElementById("agency").value = "";
+    document.getElementById("vaName").value = ""; 
+    document.getElementById("agency").value = "";
 }
 
 function openEditName() {
     let va = trainers[currentTrainer][selectedIndex];
-    let n = prompt("New Name:", va.name), ag = prompt("New Agency:", va.agency);
-    if(n && ag) { va.name = n; va.agency = ag; save(); render(); closeAction(); }
+    let n = prompt("Edit VA Name:", va.name);
+    let ag = prompt("Edit Agency:", va.agency);
+    let sh = prompt("Edit Shift (e.g. 09:00 AM - 06:00 PM):", va.shift || "Flexible");
+    
+    if(n !== null && ag !== null) { 
+        va.name = n || va.name; 
+        va.agency = ag || va.agency; 
+        va.shift = sh || va.shift;
+        save(); render(); closeAction(); toast("Details Updated");
+    }
 }
 
 function openMove() {
     let target = prompt("Target Trainer:", currentTrainer);
     if(target && trainers[target]) {
+        if(trainers[target].length >= 10) return toast("Target full!");
         trainers[target].push(trainers[currentTrainer].splice(selectedIndex,1)[0]);
-        save(); render(); closeAction(); toast("Moved");
+        save(); render(); closeAction(); toast("Moved Successfully");
     }
 }
 
 function deleteVA() {
-    if(confirm("Remove VA?")) { trainers[currentTrainer].splice(selectedIndex,1); save(); render(); closeAction(); }
+    if(confirm("Remove VA from class?")) { trainers[currentTrainer].splice(selectedIndex,1); save(); render(); closeAction(); }
 }
 
 function exportToCSV() {
-    let csv = "Name,Agency,Status\n" + trainers[currentTrainer].map(v => `${v.name},${v.agency},${v.status}`).join("\n");
+    let csv = "Name,Agency,Shift,Status\n" + trainers[currentTrainer].map(v => `"${v.name}","${v.agency}","${v.shift || 'N/A'}","${v.status}"`).join("\n");
     let a = document.createElement('a'); a.href = window.URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
     a.download = `${currentTrainer}_Roster.csv`; a.click();
 }
