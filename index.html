@@ -96,7 +96,7 @@ body {
     padding: 15px;
     margin-top: 20px;
     font-size: 13px;
-    display: none; /* Shown when VA selected */
+    display: none;
 }
 
 .notes-header {
@@ -148,7 +148,18 @@ body {
     display: flex; flex-direction: column; justify-content: center; transition: 0.2s;
 }
 
-.seat.selected { border: 2px solid var(--primary); background: #EEF2FF; transform: scale(0.98); }
+.seat.selected { border: 2px solid var(--primary); background: #EEF2FF; }
+
+/* CHECKBOX STYLE */
+.seat-checkbox {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    z-index: 10;
+}
 
 .status-dot { position: absolute; top: 10px; right: 10px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; }
 .status-active { background: var(--status-active); }
@@ -221,7 +232,7 @@ body {
                     <span style="font-weight:700">VA NOTES</span>
                     <span id="noteVaName" style="font-size:11px; opacity:0.8"></span>
                 </div>
-                <div id="noteDisplay" class="notes-content">Select a VA to see notes...</div>
+                <div id="noteDisplay" class="notes-content">Select a VA...</div>
                 <div class="notes-actions admin-only">
                     <button onclick="editNote()" style="background:var(--primary)">Edit</button>
                     <button onclick="deleteNote()" style="background:#EF4444">Clear</button>
@@ -425,7 +436,8 @@ function render() {
     document.getElementById("classTitle").innerText = `Trainer: ${currentTrainer}`;
     document.getElementById("trainerName").innerText = currentTrainer;
     document.getElementById("trainerImg").src = trainerImages[currentTrainer];
-    
+    const role = sessionStorage.getItem("userRole");
+
     let filled = 0;
     for (let i = 0; i < 10; i++) {
         let seat = document.createElement("div");
@@ -434,13 +446,19 @@ function render() {
         
         let va = list[i];
         if (va) {
+            // Add checkbox for multi-select if admin
+            let checkboxHtml = role === 'admin' ? `<input type="checkbox" class="seat-checkbox" ${selectedIndices.includes(i) ? 'checked' : ''} onclick="handleCheckboxClick(event, ${i})">` : '';
+            
             seat.innerHTML = `
+                ${checkboxHtml}
                 <div class="status-dot status-${va.status || 'active'}"></div>
                 <b>${va.name}</b><br>
                 <small style="color:#64748B">${va.agency}</small>
                 <div style="font-size:10px; color:var(--primary); font-weight:700; margin-top:8px; padding-top:5px; border-top:1px solid #F1F5F9;">
                     ${va.shift || 'No Time Set'}
                 </div>`;
+            
+            // Seat click only opens notes/modal
             seat.onclick = () => handleSeatClick(i);
             filled++;
         } else {
@@ -450,6 +468,18 @@ function render() {
         grid.appendChild(seat);
     }
     document.getElementById("occupancy").innerText = `${filled}/10 seats filled`;
+}
+
+/* ================= MULTI-SELECT BOX LOGIC ================= */
+function handleCheckboxClick(event, index) {
+    event.stopPropagation(); // Prevents seat click from firing
+    const pos = selectedIndices.indexOf(index);
+    if (pos > -1) {
+        selectedIndices.splice(pos, 1);
+    } else {
+        selectedIndices.push(index);
+    }
+    updateSelectionUI();
 }
 
 /* ================= NOTE LOGIC ================= */
@@ -492,34 +522,15 @@ function deleteNote() {
 
 /* ================= SEAT CLICKS ================= */
 function handleSeatClick(index) {
-    const role = sessionStorage.getItem("userRole");
     selectedIndex = index;
-    
-    // Load notes for the clicked VA
     updateNoteDisplay(index);
-
-    if (role === 'admin') {
-        const pos = selectedIndices.indexOf(index);
-        if (pos > -1) {
-            selectedIndices.splice(pos, 1);
-            updateSelectionUI();
-        } else {
-            selectedIndices.push(index);
-            updateSelectionUI();
-        }
-        if(selectedIndices.length === 1) {
-            document.getElementById("actionModal").classList.add("active");
-            document.getElementById("actionTitle").innerText = trainers[currentTrainer][index].name;
-        }
-    } else {
-        document.getElementById("actionModal").classList.add("active");
-        document.getElementById("actionTitle").innerText = trainers[currentTrainer][index].name;
-    }
+    document.getElementById("actionModal").classList.add("active");
+    document.getElementById("actionTitle").innerText = trainers[currentTrainer][index].name;
 }
 
 function updateSelectionUI() {
     const ui = document.getElementById("selectionUI");
-    ui.style.display = selectedIndices.length > 1 ? "flex" : "none";
+    ui.style.display = selectedIndices.length > 0 ? "flex" : "none";
     document.getElementById("selectedCount").innerText = `${selectedIndices.length} VA(s) selected`;
     render();
 }
@@ -527,7 +538,6 @@ function updateSelectionUI() {
 function clearSelection() { 
     selectedIndices = []; 
     updateSelectionUI(); 
-    document.getElementById("notesPanel").style.display = "none"; 
 }
 
 function moveSelectedVAs() {
