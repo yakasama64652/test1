@@ -12,13 +12,12 @@
     --sidebar-bg: #0F172A;
     --text-dark: #F1F5F9; 
     --text-muted: #94A3B8;
-    /* REDESIGNED CARD VARIABLES */
-    --card-bg: rgba(30, 41, 59, 0.7); /* Translucent depth */
+    --card-bg: rgba(30, 41, 59, 0.7); 
     --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     --status-active: #22C55E;
     --status-break: #EAB308;
     --status-help: #EF4444;
-    --border-color: rgba(255, 255, 255, 0.1); /* Subtle glass border */
+    --border-color: rgba(255, 255, 255, 0.1); 
 }
 
 body {
@@ -117,10 +116,9 @@ body {
 .main { flex-grow: 1; padding: 30px; overflow-y: auto; background: var(--bg-main); }
 .admin-only { display: none; }
 
-/* REDESIGNED CARD BASE */
 .card { 
     background: var(--card-bg); 
-    backdrop-filter: blur(10px); /* Frosted glass effect */
+    backdrop-filter: blur(10px); 
     padding: 24px; 
     border-radius: 16px; 
     margin-bottom: 24px; 
@@ -135,7 +133,6 @@ body {
 
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 20px; }
 
-/* REDESIGNED SEAT/VA CARDS */
 .seat {
     background: rgba(255, 255, 255, 0.03); 
     border-radius: 16px; 
@@ -199,7 +196,6 @@ body {
 .modal-box { background: #1E293B; width: 360px; padding: 30px; border-radius: 20px; text-align: center; border: 1px solid var(--border-color); color: white; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
 .modal-box button { width: 100%; margin: 8px 0; padding: 12px; border-radius: 8px; border: none; color: white; font-weight: 600; cursor: pointer; }
 
-/* Input field styling for dark mode */
 input, select {
     background: rgba(15, 23, 42, 0.8);
     border: 1px solid var(--border-color);
@@ -272,7 +268,10 @@ input:focus, select:focus { border-color: var(--primary); }
             </div>
 
             <div style="margin-top:auto; text-align:center;">
-                <div id="occupancy" style="background:#1E293B; padding:8px; border-radius:8px; margin-bottom:15px; font-size:12px;">0/10 seats filled</div>
+                <div id="occupancyWrap" style="background:#1E293B; padding:8px; border-radius:8px; margin-bottom:15px; font-size:12px; display:flex; justify-content:center; align-items:center; gap:10px;">
+                    <span id="occupancy">0/10 seats filled</span>
+                    <button class="admin-only" onclick="addMoreSeats()" title="Add More Seats" style="width:20px; height:20px; padding:0; line-height:1; background:var(--primary); border:none; color:white; border-radius:4px; cursor:pointer; font-size:14px; font-weight:bold;">+</button>
+                </div>
                 <img id="trainerImg" src="au.png" style="width:70px; height:70px; border-radius:50%; border:3px solid var(--primary); object-fit:cover;">
                 <p id="trainerName" style="font-weight:600; margin-top:10px; margin-bottom:5px;"></p>
                 <button onclick="handleLogout()" style="background:#EF4444; width:100%; border:none; color:white; padding:10px; border-radius:8px; cursor:pointer;">Logout</button>
@@ -386,6 +385,9 @@ let schedules = JSON.parse(localStorage.getItem("va_schedules")) || {
     Leo: ["TBA","TBA","TBA","TBA","TBA","OFF"] 
 };
 
+/* NEW: Seat limit tracking */
+let seatLimits = JSON.parse(localStorage.getItem("va_max_seats")) || { Au: 10, Chanie: 10, Leo: 10 };
+
 let currentTrainer = "Au";
 let selectedIndex = null;
 let selectedIndices = [];
@@ -395,6 +397,7 @@ function save() {
     localStorage.setItem("va_data", JSON.stringify(trainers));
     localStorage.setItem("va_schedules", JSON.stringify(schedules));
     localStorage.setItem("db_accounts", JSON.stringify(accounts));
+    localStorage.setItem("va_max_seats", JSON.stringify(seatLimits));
 }
 
 function toast(msg) {
@@ -406,6 +409,17 @@ function toast(msg) {
 function toggleCustomShift(val) {
     const customInput = document.getElementById('vaCustomShift');
     customInput.style.display = (val === 'CUSTOM') ? 'block' : 'none';
+}
+
+/* ================= SEAT EXPANSION ================= */
+function addMoreSeats() {
+    let increase = prompt(`Currently ${seatLimits[currentTrainer]} seats. How many seats would you like to add?`, "5");
+    if (increase && !isNaN(increase)) {
+        seatLimits[currentTrainer] += parseInt(increase);
+        save();
+        render();
+        toast(`Capacity increased to ${seatLimits[currentTrainer]}`);
+    }
 }
 
 /* ================= AUTH ================= */
@@ -465,13 +479,15 @@ function render() {
     let grid = document.getElementById("seatGrid");
     grid.innerHTML = "";
     let list = trainers[currentTrainer];
+    let maxSeats = seatLimits[currentTrainer] || 10;
+
     document.getElementById("classTitle").innerText = `Trainer: ${currentTrainer}`;
     document.getElementById("trainerName").innerText = currentTrainer;
     document.getElementById("trainerImg").src = trainerImages[currentTrainer];
     const role = sessionStorage.getItem("userRole");
 
     let filled = 0;
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < maxSeats; i++) {
         let seat = document.createElement("div");
         seat.className = "seat";
         if (selectedIndices.includes(i)) seat.classList.add("selected");
@@ -499,7 +515,7 @@ function render() {
         }
         grid.appendChild(seat);
     }
-    document.getElementById("occupancy").innerText = `${filled}/10 seats filled`;
+    document.getElementById("occupancy").innerText = `${filled}/${maxSeats} seats filled`;
 }
 
 /* ================= EVENT HANDLERS ================= */
@@ -575,7 +591,8 @@ function clearSelection() {
 function moveSelectedVAs() {
     let target = prompt("Move selected VAs to: (Au, Chanie, Leo)", currentTrainer);
     if(target && trainers[target]) {
-        if(trainers[target].length + selectedIndices.length > 10) return toast("Target full!");
+        let maxTarget = seatLimits[target] || 10;
+        if(trainers[target].length + selectedIndices.length > maxTarget) return toast("Target full!");
         selectedIndices.sort((a,b)=>b-a).forEach(idx => {
             trainers[target].push(trainers[currentTrainer].splice(idx,1)[0]);
         });
@@ -627,7 +644,9 @@ function assignVA() {
     let s = (sSelect === 'CUSTOM') ? document.getElementById("vaCustomShift").value : sSelect;
     
     if(!n || !a || (sSelect === 'CUSTOM' && !s)) return toast("Fill all fields");
-    if(trainers[t].length >= 10) return toast("Class Full");
+    
+    let maxSeats = seatLimits[t] || 10;
+    if(trainers[t].length >= maxSeats) return toast("Class Full");
     
     trainers[t].push({name:n, agency:a, status:'active', shift:s, note:''});
     save(); render(); toast("VA Assigned");
@@ -654,7 +673,8 @@ function openEditName() {
 function openMove() {
     let target = prompt("Target Trainer:", currentTrainer);
     if(target && trainers[target]) {
-        if(trainers[target].length >= 10) return toast("Target full!");
+        let maxTarget = seatLimits[target] || 10;
+        if(trainers[target].length >= maxTarget) return toast("Target full!");
         trainers[target].push(trainers[currentTrainer].splice(selectedIndex,1)[0]);
         save(); render(); closeAction(); toast("Moved Successfully");
     }
